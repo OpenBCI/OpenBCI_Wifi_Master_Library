@@ -29,12 +29,13 @@
 #define WIFI_SPI_MSG_GAINS 0x03
 
 
-#ifdef CYTON
-#define WIFI_RESET 18
-#define WIFI_SS 13          // Wifi Chip Select
-#elif GANGLION
-#define WIFI_RESET 4
-#define WIFI_SS 24          // Wifi Chip Select
-#endif
+// #if defined(CYTON)
+          // Wifi Chip Select
+// #endif
+//
+// #if defined(GANGLION)
+// #define WIFI_RESET 4
+// #define WIFI_SS 24          // Wifi Chip Select
+// #endif
 
 #endif

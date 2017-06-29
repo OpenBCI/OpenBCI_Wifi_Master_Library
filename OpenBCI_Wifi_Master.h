@@ -20,12 +20,15 @@
 #include <Arduino.h>
 #include "OpenBCI_Wifi_Master_Definitions.h"
 
+#define CYTON
 #ifdef CYTON
 #include <DSPI.h>
 #define USE_SERIAL Serial0
-#elif GANGLION
-#include <SPI.h>
-#define USE_SERIAL Serial
+#define WIFI_RESET 18
+#define WIFI_SS 13
+// #elif GANGLION
+// #include <SPI.h>
+// #define USE_SERIAL Serial
 #endif
 
 class OpenBCI_Wifi_Master_Class {
@@ -33,11 +36,13 @@ class OpenBCI_Wifi_Master_Class {
 public:
 
   OpenBCI_Wifi_Master_Class();
+  boolean attach(void);
   boolean begin(void);
   boolean begin(boolean, boolean);
-  boolean attach(void);
   void    bufferTxClear(void);
   void    bufferRxClear(void);
+  void    csLow(void);
+  void    csHigh(void);
   void    flushBufferTx(void);
   char    getChar(void);
   boolean hasData(void);
@@ -50,7 +55,6 @@ public:
   void    sendStringMulti(const char *);
   void    sendStringLast();
   void    sendStringLast(const char *);
-  void    setInfo(SpiInfo, boolean, boolean);
   boolean smell(void);
   boolean storeByteBufTx(uint8_t);
   void    writeData(uint8_t *, size_t);
