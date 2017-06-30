@@ -95,18 +95,18 @@ void OpenBCI_Wifi_Master_Class::bufferTxClear(void) {
 
 //SPI chip select method
 void OpenBCI_Wifi_Master_Class::csLow() {
-#ifdef CYTON
-spi.setMode(DSPI_MODE0);
-spi.setSpeed(10000000);
+#if defined(__PIC32MX2XX__)
+  spi.setMode(DSPI_MODE0);
+  spi.setSpeed(10000000);
 #endif
-digitalWrite(WIFI_SS, LOW);
+  digitalWrite(WIFI_SS, LOW);
 }
 
 void OpenBCI_Wifi_Master_Class::csHigh() {
   digitalWrite(WIFI_SS, HIGH);
 
-#ifdef CYTON
   // DEFAULT TO SD MODE!
+#if defined(__PIC32MX2XX__)
   spi.setMode(DSPI_MODE0);
 #endif
 }
@@ -127,7 +127,7 @@ char OpenBCI_Wifi_Master_Class::getChar(void) {
   } else if (numChars > 1) {
     bufferReadFrom[0] = numChars - 1;
     for (uint8_t i = 1; i < numChars; i++) {
-      bufferReadFrom[i] = bufferReadFrom[i+1]
+      bufferReadFrom[i] = bufferReadFrom[i+1];
     }
   }
   return output;
@@ -142,16 +142,16 @@ boolean OpenBCI_Wifi_Master_Class::hasData(void) {
  *  mainly used for timers and such.
  */
 void OpenBCI_Wifi_Master_Class::loop(void) {
-  if (toggleReset) {
+  if (toggleWifiReset) {
     if (millis() > timeOfWifiToggle + 500) {
       digitalWrite(WIFI_RESET, HIGH);
-      toggleReset = false;
+      toggleWifiReset = false;
       toggleWifiCS = true;
     }
   }
   if (toggleWifiCS) {
     if (millis() > timeOfWifiToggle + 3000) {
-      digitalWrite(OPENBCI_PIN_LED, HIGH);
+      // digitalWrite(OPENBCI_PIN_LED, HIGH);
       pinMode(WIFI_SS, OUTPUT);
       digitalWrite(WIFI_SS, HIGH); // Set back to high
       toggleWifiCS = false;
@@ -162,15 +162,12 @@ void OpenBCI_Wifi_Master_Class::loop(void) {
   if (seekingWifi) {
     if (millis() > timeOfWifiToggle + 4000) {
       seekingWifi = false;
-      if (!wifiAttach()) {
+      if (!attach()) {
         attachAttempts++;
         if (attachAttempts < 10) {
           seekingWifi = true;
           timeOfWifiToggle = millis();
         }
-      } else {
-        // Send gains
-        sendGains();
       }
     }
   }
@@ -179,7 +176,7 @@ void OpenBCI_Wifi_Master_Class::loop(void) {
       readData();
       uint8_t numChars = (uint8_t)bufferRx[0];
       if (numChars > 0 && numChars < WIFI_SPI_MAX_PACKET_SIZE) {
-        memset(bufferRx, bufferReadFrom, WIFI_SPI_MAX_PACKET_SIZE);
+        memcpy(bufferRx, bufferReadFrom, WIFI_SPI_MAX_PACKET_SIZE);
       }
       timeOfLastRead = millis();
     }
@@ -202,13 +199,13 @@ boolean OpenBCI_Wifi_Master_Class::storeByteBufTx(uint8_t b) {
  * Used to read data into the wifi input buffer
  */
 void OpenBCI_Wifi_Master_Class::readData() {
-  csLow(WIFI_SS);
+  csLow();
   xfer(0x03);
   xfer(0x00);
   for(uint8_t i = 0; i < 32; i++) {
     bufferRx[i] = xfer(0);
   }
-  csHigh(WIFI_SS);
+  csHigh();
 }
 
 /**
@@ -216,10 +213,10 @@ void OpenBCI_Wifi_Master_Class::readData() {
  * @return uint32_t the status
  */
 uint32_t OpenBCI_Wifi_Master_Class::readStatus(void){
-  csLow(WIFI_SS);
+  csLow();
   xfer(0x04);
   uint32_t status = (xfer(0x00) | ((uint32_t)(xfer(0x00)) << 8) | ((uint32_t)(xfer(0x00)) << 16) | ((uint32_t)(xfer(0x00)) << 24));
-  csHigh(WIFI_SS);
+  csHigh();
   return status;
 }
 
@@ -244,17 +241,17 @@ void OpenBCI_Wifi_Master_Class::reset(void) {
   // See https://github.com/esp8266/Arduino/blob/master/libraries/SPISlave/examples/SPISlave_SafeMaster/SPISlave_SafeMaster.ino#L12-L15
   pinMode(WIFI_SS, INPUT);
   digitalWrite(WIFI_RESET, LOW); // Reset the ESP8266
-#ifdef CYTON
-  digitalWrite(OPENBCI_PIN_LED, LOW); // Good visual indicator of what's going on
-#endif
+// #ifdef CYTON
+//   digitalWrite(OPENBCI_PIN_LED, LOW); // Good visual indicator of what's going on
+// #endif
   rx = false;
   tx = false;
   present = false;
-  toggleReset = true;
+  toggleWifiReset = true;
   timeOfWifiToggle = millis();
 }
 
-void OpenBCI_Wifi_Master_Class::sendGains(void) {
+void OpenBCI_Wifi_Master_Class::sendGains(uint8_t numChannels, uint8_t *gains) {
   if (!present) return;
   if (!tx) return;
 
@@ -265,7 +262,7 @@ void OpenBCI_Wifi_Master_Class::sendGains(void) {
   storeByteBufTx(WIFI_SPI_MSG_GAINS); // Redundancy
   storeByteBufTx(numChannels);
   for (uint8_t i = 0; i < numChannels; i++) {
-    storeByteBufTx(channelSettings[i][GAIN_SET]);
+    storeByteBufTx(gains[i]);
   }
   flushBufferTx();
 }
@@ -353,7 +350,7 @@ boolean OpenBCI_Wifi_Master_Class::smell(void){
 void OpenBCI_Wifi_Master_Class::writeData(uint8_t * data, size_t len) {
   uint8_t i = 0;
   byte b = 0;
-  digitalWrite(WIFI_SS, LOW);
+  csLow();
   xfer(0x02);
   xfer(0x00);
   while(len-- && i < WIFI_SPI_MAX_PACKET_SIZE) {
@@ -362,14 +359,13 @@ void OpenBCI_Wifi_Master_Class::writeData(uint8_t * data, size_t len) {
   while(i++ < WIFI_SPI_MAX_PACKET_SIZE) {
     xfer(0); // Pad with zeros till 32
   }
-  digitalWrite(WIFI_SS, HIGH);
+  csHigh();
 }
 
 //SPI communication method
-byte OpenBCI_Wifi_Master_Class::xfer(byte _data)
-{
+byte OpenBCI_Wifi_Master_Class::xfer(byte _data) {
   byte inByte;
-#ifdef CYTON
+#if defined(__PIC32MX2XX__)
   inByte = spi.transfer(_data);
 #elif GANGLION
   inByte = SPI.transfer(_data);

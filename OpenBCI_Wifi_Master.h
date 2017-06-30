@@ -20,8 +20,7 @@
 #include <Arduino.h>
 #include "OpenBCI_Wifi_Master_Definitions.h"
 
-#define CYTON
-#ifdef CYTON
+#if defined(__PIC32MX2XX__)
 #include <DSPI.h>
 #define USE_SERIAL Serial0
 #define WIFI_RESET 18
@@ -41,8 +40,8 @@ public:
   boolean begin(boolean, boolean);
   void    bufferTxClear(void);
   void    bufferRxClear(void);
-  void    csLow(void);
   void    csHigh(void);
+  void    csLow(void);
   void    flushBufferTx(void);
   char    getChar(void);
   boolean hasData(void);
@@ -51,7 +50,7 @@ public:
   uint32_t readStatus(void);
   boolean remove(void);
   void    reset(void);
-  void    sendGains(void);
+  void    sendGains(uint8_t, uint8_t *);
   void    sendStringMulti(const char *);
   void    sendStringLast();
   void    sendStringLast(const char *);
@@ -72,7 +71,14 @@ public:
   uint8_t bufferTx[WIFI_SPI_MAX_PACKET_SIZE];
   uint8_t bufferTxPosition;
 
+#if defined(__PIC32MX2XX__)
+  DSPI0 spi;
+#endif
+
 private:
+
+  byte xfer(byte _data);
+
   boolean toggleWifiCS;
   boolean toggleWifiReset;
   boolean soughtWifiShield;
