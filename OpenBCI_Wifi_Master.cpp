@@ -15,6 +15,7 @@ MIT license
 // CONSTRUCTOR
 OpenBCI_Wifi_Master_Class::OpenBCI_Wifi_Master_Class() {
   // Set defaults
+  debug = true;
   present = false;
   rx = false;
   seekingWifi = false;
@@ -46,14 +47,20 @@ boolean OpenBCI_Wifi_Master_Class::begin(void) {
 */
 boolean OpenBCI_Wifi_Master_Class::begin(boolean _rx, boolean _tx) {
 
+  // if (debug) {
+  //   Serial0.print("begin: Wifi rx: ");
+  //   Serial0.print(_rx);
+  //   Serial0.print(" tx: ");
+  //   Serial0.println(_tx);
+  // }
+
   rx = _rx;
   tx = _tx;
 
   pinMode(WIFI_SS, INPUT);
   pinMode(WIFI_RESET,OUTPUT); digitalWrite(WIFI_RESET, LOW);
 
-  attach();
-
+  reset();
 }
 
 /**
@@ -119,6 +126,10 @@ void OpenBCI_Wifi_Master_Class::flushBufferTx() {
   bufferTxPosition = 0;
 }
 
+/**
+ * Used to read a char from the wifi recieve buffer
+ * @return  [char] - A single char from the RX buffer
+ */
 char OpenBCI_Wifi_Master_Class::getChar(void) {
   uint8_t numChars = bufferReadFrom[0];
   char output = bufferReadFrom[1];
@@ -176,7 +187,10 @@ void OpenBCI_Wifi_Master_Class::loop(void) {
       readData();
       uint8_t numChars = (uint8_t)bufferRx[0];
       if (numChars > 0 && numChars < WIFI_SPI_MAX_PACKET_SIZE) {
-        memcpy(bufferRx, bufferReadFrom, WIFI_SPI_MAX_PACKET_SIZE);
+        // Copy to the read from buffer
+        memcpy(bufferReadFrom, bufferRx, WIFI_SPI_MAX_PACKET_SIZE);
+        // Clear the rx recieve buffer
+        bufferRxClear();
       }
       timeOfLastRead = millis();
     }

@@ -61,6 +61,7 @@ public:
   // VARIABLES
 
   // wifi variables
+  boolean debug;
   boolean present;
   boolean rx;
   boolean tx;

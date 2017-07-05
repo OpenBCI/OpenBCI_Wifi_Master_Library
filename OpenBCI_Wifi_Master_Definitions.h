@@ -13,11 +13,7 @@
 #ifndef __OpenBCI_Wifi_Master_Definitions__
 #define __OpenBCI_Wifi_Master_Definitions__
 
-/*
-* WIFI
-*/
 #define PCKT_END 0xC0
-#define OPENBCI_SAMPLE_RATE_SET '~'
 #define WIFI_SPI_CMD_NULL 0x00
 #define WIFI_SPI_CMD_DATA_READ 0x03
 #define WIFI_SPI_CMD_DATA_WRITE 0x02
@@ -27,15 +23,5 @@
 #define WIFI_SPI_MSG_LAST 0x01
 #define WIFI_SPI_MSG_MULTI 0x02
 #define WIFI_SPI_MSG_GAINS 0x03
-
-
-// #if defined(CYTON)
-          // Wifi Chip Select
-// #endif
-//
-// #if defined(GANGLION)
-// #define WIFI_RESET 4
-// #define WIFI_SS 24          // Wifi Chip Select
-// #endif
 
 #endif
