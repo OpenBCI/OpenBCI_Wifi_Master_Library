@@ -25,9 +25,10 @@
 #define USE_SERIAL Serial0
 #define WIFI_RESET 18
 #define WIFI_SS 13
-// #elif GANGLION
-// #include <SPI.h>
-// #define USE_SERIAL Serial
+#else
+#define USE_SERIAL Serial
+#define WIFI_SS 24          // Wifi Chip Select
+#define WIFI_RESET 4
 #endif
 
 class OpenBCI_Wifi_Master_Class {
