@@ -29,6 +29,9 @@ OpenBCI_Wifi_Master_Class::OpenBCI_Wifi_Master_Class() {
   timeOfWifiStart = 0;
   bufferTxPosition = 0;
 
+  bufferReadFromClear();
+  bufferTxClear();
+
 }
 
 /**
@@ -100,6 +103,15 @@ void OpenBCI_Wifi_Master_Class::bufferTxClear(void) {
   bufferTxPosition = 0;
 }
 
+/**
+ * Clear the wifi tx buffer
+ */
+void OpenBCI_Wifi_Master_Class::bufferReadFromClear(void) {
+  for (uint8_t i = 0; i < WIFI_SPI_MAX_PACKET_SIZE; i++) {
+    bufferReadFrom[i] = 0;
+  }
+}
+
 //SPI chip select method
 void OpenBCI_Wifi_Master_Class::csLow() {
 #if defined(__PIC32MX2XX__)
@@ -135,11 +147,13 @@ char OpenBCI_Wifi_Master_Class::getChar(void) {
   char output = bufferReadFrom[1];
   if (numChars == 1) {
     bufferReadFrom[0] = 0;
+    bufferReadFrom[1] = 0;
   } else if (numChars > 1) {
     bufferReadFrom[0] = numChars - 1;
     for (uint8_t i = 1; i < numChars; i++) {
       bufferReadFrom[i] = bufferReadFrom[i+1];
     }
+    bufferReadFrom[numChars] = 0;
   }
   return output;
 }
@@ -381,7 +395,7 @@ byte OpenBCI_Wifi_Master_Class::xfer(byte _data) {
   byte inByte;
 #if defined(__PIC32MX2XX__)
   inByte = spi.transfer(_data);
-#elif GANGLION
+#else
   inByte = SPI.transfer(_data);
 #endif
   return inByte;

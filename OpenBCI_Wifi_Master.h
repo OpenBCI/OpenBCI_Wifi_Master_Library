@@ -20,12 +20,13 @@
 #include <Arduino.h>
 #include "OpenBCI_Wifi_Master_Definitions.h"
 
-#if defined(__PIC32MX2XX__)
+#if defined(__PIC32MX2XX__) // Cyton
 #include <DSPI.h>
 #define USE_SERIAL Serial0
 #define WIFI_RESET 18
 #define WIFI_SS 13
-#else
+#else // Ganglion
+#include <SPI.h>
 #define USE_SERIAL Serial
 #define WIFI_SS 24          // Wifi Chip Select
 #define WIFI_RESET 4
@@ -80,6 +81,7 @@ public:
 private:
 
   byte xfer(byte _data);
+  void bufferReadFromClear(void);
 
   boolean toggleWifiCS;
   boolean toggleWifiReset;
