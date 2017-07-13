@@ -67,6 +67,7 @@ public:
   boolean present;
   boolean rx;
   boolean tx;
+  boolean sentGains;
 
   char bufferRx[WIFI_SPI_MAX_PACKET_SIZE];
   char bufferReadFrom[WIFI_SPI_MAX_PACKET_SIZE];

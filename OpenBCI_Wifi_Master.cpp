@@ -19,6 +19,7 @@ OpenBCI_Wifi_Master_Class::OpenBCI_Wifi_Master_Class() {
   present = false;
   rx = false;
   seekingWifi = false;
+  sentGains = false;
   soughtWifiShield = false;
   toggleWifiCS = false;
   toggleWifiReset = false;
@@ -282,6 +283,9 @@ void OpenBCI_Wifi_Master_Class::reset(void) {
 void OpenBCI_Wifi_Master_Class::sendGains(uint8_t numChannels, uint8_t *gains) {
   if (!present) return;
   if (!tx) return;
+
+  // Mark that we sent gains
+  if (!sentGains) sentGains = true;
 
   // Clear the wifi buffer
   bufferTxClear();
