@@ -275,6 +275,7 @@ void OpenBCI_Wifi_Master_Class::reset(void) {
 // #endif
   rx = false;
   tx = false;
+  sentGains = false;
   present = false;
   toggleWifiReset = true;
   timeOfWifiToggle = millis();
