@@ -1,3 +1,11 @@
+# v1.0.0
+
+Ready for release!
+
+## Release Candidate 1
+
+First releases
+
 # v0.0.3
 
 ### Bug Fixes
