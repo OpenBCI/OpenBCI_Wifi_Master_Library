@@ -338,6 +338,15 @@ void OpenBCI_Wifi_Master_Class::sendStringLast(const char *str) {
  *  sendStringLast to indicate to the wifi shield the multi part transmission is over.
  * @param str const char * less than 32 bytes to be sent over SPI
  */
+void OpenBCI_Wifi_Master_Class::sendStringMulti(char c) {
+  sendStringMulti((const char*)c);
+}
+
+/**
+ * Will send a const char string (less than 32 bytes) to the wifi shield, call
+ *  sendStringLast to indicate to the wifi shield the multi part transmission is over.
+ * @param str const char * less than 32 bytes to be sent over SPI
+ */
 void OpenBCI_Wifi_Master_Class::sendStringMulti(const char *str) {
   if (!present) return;
   if (!tx) return;

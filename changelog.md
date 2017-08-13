@@ -1,6 +1,10 @@
 # v1.0.0
 
-Ready for release!
+## Release Candidate
+
+### New Functions
+
+* Add `sendStringMulti(char)`
 
 ## Release Candidate 1
 

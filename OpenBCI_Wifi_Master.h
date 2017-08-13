@@ -53,6 +53,7 @@ public:
   boolean remove(void);
   void    reset(void);
   void    sendGains(uint8_t, uint8_t *);
+  void    sendStringMulti(char);
   void    sendStringMulti(const char *);
   void    sendStringLast();
   void    sendStringLast(const char *);
