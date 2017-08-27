@@ -1,16 +1,14 @@
 # v1.0.0
 
+### Breaking Changes
+
+* String messages are now sent with `\0` which really really helped the conversion to clean strings on the wifi shield!
+
 ## Release Candidate 2
 
 ### New Functions
 
 * Add `sendStringMulti(char)`
-
-## Release Candidate 3
-
-### Breaking Changes
-
-* String messages are now sent with `\0` which really really helped the conversion to clean strings on the wifi shield!
 
 ## Release Candidate 1
 
