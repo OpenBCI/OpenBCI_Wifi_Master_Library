@@ -1,6 +1,6 @@
 # v1.0.0
 
-## Release Candidate
+## Release Candidate 2
 
 ### New Functions
 
