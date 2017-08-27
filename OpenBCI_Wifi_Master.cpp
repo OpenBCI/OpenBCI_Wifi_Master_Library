@@ -329,6 +329,7 @@ void OpenBCI_Wifi_Master_Class::sendStringLast(const char *str) {
   for (int i = 0; i < len; i++) {
     storeByteBufTx(str[i]);
   }
+  storeByteBufTx('\0');
   flushBufferTx();
   bufferTxClear();
 }
@@ -361,6 +362,7 @@ void OpenBCI_Wifi_Master_Class::sendStringMulti(const char *str) {
   for (int i = 0; i < len; i++) {
     storeByteBufTx(str[i]);
   }
+  storeByteBufTx('\0');
   flushBufferTx();
   bufferTxClear();
 }
