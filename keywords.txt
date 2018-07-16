@@ -6,18 +6,18 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-wifi    KEYWORD1
+wifi	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-begin                           KEYWORD2
-getChar                         KEYWORD2
-hasData                         KEYWORD2
-loop                            KEYWORD2
-present                         KEYWORD2
-sentGains                       KEYWORD2
-tx                              KEYWORD2
+begin	KEYWORD2
+getChar	KEYWORD2
+hasData	KEYWORD2
+loop	KEYWORD2
+present	KEYWORD2
+sentGains	KEYWORD2
+tx	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
